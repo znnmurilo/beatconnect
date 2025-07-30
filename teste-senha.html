@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Senha - BeatConnect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #e2e8f0;
+        }
+        .test-section {
+            background: #1a1a2e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #065f46; color: #d1fae5; }
+        .error { background: #7f1d1d; color: #fecaca; }
+        .info { background: #1e3a8a; color: #dbeafe; }
+        
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #4f46e5; }
+        
+        input {
+            width: 200px;
+            padding: 8px;
+            margin: 5px;
+            background: #374151;
+            color: #e2e8f0;
+            border: 1px solid #4b5563;
+            border-radius: 5px;
+        }
+        
+        .debug-info {
+            background: #374151;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 Teste de Senha - BeatConnect</h1>
+    
+    <div class="test-section">
+        <h2>Teste de Login com Debug</h2>
+        <div>
+            <input type="text" id="username" placeholder="Username" value="admin">
+            <input type="password" id="password" placeholder="Senha" value="admin123">
+            <br>
+            <button onclick="testLoginWithDebug()">🔐 Testar Login com Debug</button>
+        </div>
+        <div id="debugResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Teste de Comparação de Senhas</h2>
+        <button onclick="testPasswordComparison()">Testar Comparação</button>
+        <div id="comparisonResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Teste da Função authenticateAdmin</h2>
+        <button onclick="testAuthenticateFunction()">Testar Função</button>
+        <div id="functionResults"></div>
+    </div>
+    
+    <!-- Supabase Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        // Teste com debug detalhado
+        async function testLoginWithDebug() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultsDiv = document.getElementById('debugResults');
+            
+            let debug = '<h3>🔍 Debug Detalhado:</h3>';
+            debug += `<div class="debug-info">`;
+            debug += `<strong>Username digitado:</strong> "${username}"<br>`;
+            debug += `<strong>Comprimento username:</strong> ${username.length}<br>`;
+            debug += `<strong>Senha digitada:</strong> "${password}"<br>`;
+            debug += `<strong>Comprimento senha:</strong> ${password.length}<br>`;
+            debug += `<strong>Senha esperada:</strong> "admin123"<br>`;
+            debug += `<strong>Senhas são iguais?</strong> ${password === 'admin123'}<br>`;
+            debug += `<strong>Username é "admin"?</strong> ${username === 'admin'}<br>`;
+            debug += `</div>`;
+            
+            resultsDiv.innerHTML = debug + '<div class="test-result info">🔄 Tentando fazer login...</div>';
+            
+            try {
+                const result = await authenticateAdmin(username, password);
+                
+                debug += `<div class="debug-info">`;
+                debug += `<strong>Resultado da função:</strong> ${JSON.stringify(result, null, 2)}<br>`;
+                debug += `</div>`;
+                
+                if (result.success) {
+                    resultsDiv.innerHTML = debug + `
+                        <div class="test-result success">
+                            ✅ Login realizado com sucesso!<br>
+                            <strong>Usuário:</strong> ${result.data.username}<br>
+                            <strong>ID:</strong> ${result.data.id}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = debug + `<div class="test-result error">❌ Falha no login: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = debug + `<div class="test-result error">❌ Erro inesperado: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste de comparação de senhas
+        function testPasswordComparison() {
+            const resultsDiv = document.getElementById('comparisonResults');
+            const testPasswords = [
+                'admin',
+                'admin123',
+                'admin123 ',
+                ' admin123',
+                '  admin123  ',
+                'ADMIN123',
+                'Admin123'
+            ];
+            
+            let results = '<h3>Teste de Comparação:</h3>';
+            
+            testPasswords.forEach(testPass => {
+                const isCorrect = testPass === 'admin123';
+                const status = isCorrect ? '✅ CORRETO' : '❌ INCORRETO';
+                results += `
+                    <div class="debug-info">
+                        <strong>Testando:</strong> "${testPass}" (${testPass.length} chars) - ${status}
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = results;
+        }
+        
+        // Teste da função
+        function testAuthenticateFunction() {
+            const resultsDiv = document.getElementById('functionResults');
+            
+            if (typeof authenticateAdmin === 'function') {
+                resultsDiv.innerHTML = '<div class="test-result success">✅ Função authenticateAdmin está disponível</div>';
+                
+                // Teste direto da função
+                authenticateAdmin('admin', 'admin123').then(result => {
+                    resultsDiv.innerHTML += `
+                        <div class="debug-info">
+                            <strong>Teste direto:</strong> ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                });
+            } else {
+                resultsDiv.innerHTML = '<div class="test-result error">❌ Função authenticateAdmin não encontrada</div>';
+            }
+        }
+        
+        // Teste automático
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                testPasswordComparison();
+                testAuthenticateFunction();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
