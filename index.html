@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeatConnect - Enviar Beat</title>
+    <title>BeatEmite - Enviar Beat (Mobile)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -38,38 +38,12 @@
             overflow-x: hidden;
         }
 
-        /* Animated Background */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.05;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, var(--primary) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: move 20s linear infinite;
-        }
-
-        @keyframes move {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
         /* Header */
         header {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(15, 15, 35, 0.95);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
             z-index: 1000;
@@ -95,60 +69,29 @@
             text-decoration: none;
         }
 
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--glow);
-        }
-
         .nav-links {
             display: flex;
             gap: 2rem;
-            list-style: none;
+            align-items: center;
         }
 
-        .nav-links a {
-            color: var(--text);
+        .nav-link {
+            color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
-            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
         }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: width 0.3s ease;
+        .nav-link:hover {
+            color: var(--primary);
+            background: rgba(107, 114, 128, 0.1);
         }
 
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .dashboard-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: var(--glow);
-        }
-
-        .dashboard-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(107, 114, 128, 0.2);
         }
 
         /* Main Content */
@@ -157,130 +100,68 @@
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Hero Section */
         .hero {
             text-align: center;
-            margin-bottom: 4rem;
-            animation: fadeInUp 1s ease;
+            padding: 4rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .hero-title {
-            font-size: clamp(2.5rem, 6vw, 4rem);
+        .hero h1 {
+            font-size: 3rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), #a855f7);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--text));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
+            background-clip: text;
         }
 
-        .hero-subtitle {
-            font-size: 1.25rem;
+        .hero p {
+            font-size: 1.2rem;
             color: var(--text-muted);
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Artist Card */
-        .artist-section {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 2rem;
             margin-bottom: 3rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .artist-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .artist-section:hover::before {
-            left: 100%;
-        }
-
-        .artist-section:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .artist-avatar {
-            width: 120px;
-            height: 120px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            box-shadow: var(--glow);
-        }
-
-        .artist-name {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 0.5rem;
-        }
-
-        .artist-desc {
-            color: var(--text-muted);
-            font-size: 1.1rem;
             line-height: 1.6;
         }
 
-        /* Form */
+        /* Form Container */
         .form-container {
-            background: var(--bg-card);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            padding: 2.5rem;
             max-width: 600px;
             margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
         }
 
-        .form-container::before {
+        .form-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.05), transparent);
+            background: linear-gradient(90deg, transparent, rgba(107, 114, 128, 0.1), transparent);
             transition: left 0.5s ease;
         }
 
-        .form-container:hover::before {
+        .form-card:hover::before {
             left: 100%;
         }
 
         .form-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: var(--text);
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             text-align: center;
+            color: var(--text);
         }
 
         .form-group {
@@ -294,7 +175,7 @@
             color: var(--text);
         }
 
-        .form-input, .form-textarea {
+        .form-input {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid var(--border);
@@ -305,52 +186,79 @@
             transition: all 0.3s ease;
         }
 
-        .form-input:focus, .form-textarea:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
         }
 
         .form-textarea {
             resize: vertical;
-            min-height: 120px;
+            min-height: 100px;
         }
 
+        /* File Upload */
         .file-upload {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-
-        .file-upload input[type=file] {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .file-upload-label {
-            display: block;
-            padding: 1.5rem;
             border: 2px dashed var(--border);
             border-radius: 12px;
+            padding: 2rem;
             text-align: center;
-            cursor: pointer;
             transition: all 0.3s ease;
+            cursor: pointer;
             background: var(--bg);
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(107, 114, 128, 0.05);
+        }
+
+        .file-upload.dragover {
+            border-color: var(--primary);
+            background: rgba(107, 114, 128, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .file-upload-text {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .file-upload-hint {
+            font-size: 0.9rem;
             color: var(--text-muted);
         }
 
-        .file-upload-label:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-            color: var(--primary);
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(107, 114, 128, 0.1);
+            border-radius: 8px;
+            display: none;
         }
 
-        .file-upload-label.dragover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
+        .file-info.show {
+            display: block;
         }
 
+        .file-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.25rem;
+        }
+
+        .file-size {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Submit Button */
         .submit-btn {
             width: 100%;
             padding: 1rem;
@@ -367,126 +275,206 @@
             overflow: hidden;
         }
 
-        .submit-btn::before {
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(107, 114, 128, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn.loading {
+            background: var(--primary-dark);
+        }
+
+        .submit-btn.loading::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .submit-btn:hover::before {
-            left: 100%;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.4);
-        }
-
-        /* Success Message */
-        .success-message {
-            display: none;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid #10b981;
-            border-radius: 12px;
-            padding: 1rem;
+        /* Progress Bar */
+        .progress-container {
             margin-top: 1rem;
+            display: none;
+        }
+
+        .progress-container.show {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
             text-align: center;
-            color: #10b981;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Status Messages */
+        .status-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+        .status-message.show {
+            display: block;
         }
 
-        .floating {
-            animation: float 6s ease-in-out infinite;
+        .status-success {
+            background: rgba(107, 114, 128, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        .status-info {
+            background: rgba(107, 114, 128, 0.2);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        /* Artist Section */
+        .artist-section {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-card);
+            margin-top: 4rem;
+        }
+
+        .artist-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .artist-description {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .navbar {
-                padding: 1rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .container {
-                padding: 1rem;
-            }
-
-            .form-container {
-                padding: 1.5rem;
-            }
-
-            .artist-avatar {
-                width: 80px;
-                height: 80px;
+            .hero h1 {
                 font-size: 2rem;
             }
 
-            .artist-name {
-                font-size: 1.5rem;
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .nav-link {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Mobile-specific optimizations */
+        @media (max-width: 480px) {
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .form-card {
+                padding: 1rem;
+            }
+
+            .file-upload {
+                padding: 1.5rem;
+            }
+
+            .file-upload-icon {
+                font-size: 2rem;
+            }
+
+            .submit-btn {
+                padding: 0.875rem;
+                font-size: 0.95rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
-    
+    <!-- Header -->
     <header>
         <nav class="navbar">
             <a href="home.html" class="logo">
-                <div class="logo-icon">🎵</div>
-                BeatConnect
+                🎵 BeatConnect
             </a>
-            <ul class="nav-links">
-                <li><a href="home.html">Home</a></li>
-                <li><a href="#enviar">Enviar Beat</a></li>
-            </ul>
-            <a href="dashboard.html" class="dashboard-btn">Dashboard</a>
+            <div class="nav-links">
+                <a href="home.html" class="nav-link">Home</a>
+                <a href="index.html" class="nav-link active">Enviar Beat</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+            </div>
         </nav>
     </header>
 
+    <!-- Main Content -->
     <main>
-        <div class="container">
-            <section class="hero">
-                <h1 class="hero-title floating">Envie seu Beat</h1>
-                <p class="hero-subtitle">
-                    Conecte-se diretamente com o Emite Unico. Envie seus beats e acompanhe o status em tempo real.
-                </p>
-            </section>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Envie seu Beat</h1>
+            <p>Compartilhe sua música com o artista e faça parte da próxima hit!</p>
+        </section>
 
-            <section class="artist-section" id="enviar">
-                <div class="artist-avatar">🎤</div>
-                <h2 class="artist-name">Emite Unico</h2>
-                <p class="artist-desc">
-                    Artista renomado do cenário musical, sempre em busca de novos talentos e beats únicos. 
-                    Envie seu trabalho e tenha a chance de ser descoberto.
-                </p>
-            </section>
-
-            <div class="form-container">
-                <h3 class="form-title">Formulário de Envio</h3>
+        <!-- Form Container -->
+        <div class="form-container">
+            <div class="form-card">
+                <h2 class="form-title">📤 Enviar Beat</h2>
+                
                 <form id="beatForm">
                     <div class="form-group">
                         <label class="form-label" for="producerName">Nome do Produtor</label>
@@ -499,183 +487,53 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="beatMessage">Mensagem (opcional)</label>
-                        <textarea id="beatMessage" class="form-textarea" placeholder="Escreva uma mensagem personalizada para o Emite Unico..."></textarea>
+                        <label class="form-label" for="message">Mensagem (opcional)</label>
+                        <textarea id="message" class="form-input form-textarea" placeholder="Conte um pouco sobre seu beat..."></textarea>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Arquivo do Beat</label>
-                        <div class="file-upload">
-                            <input type="file" id="beatFile" accept=".mp3,.wav" required>
-                            <label for="beatFile" class="file-upload-label">
-                                Arraste seu arquivo aqui ou clique para selecionar (.mp3 ou .wav)
-                            </label>
+                        <div class="file-upload" id="fileUpload">
+                            <div class="file-upload-icon">🎵</div>
+                            <div class="file-upload-text">Clique ou arraste seu arquivo aqui</div>
+                            <div class="file-upload-hint">Formatos aceitos: .mp3, .wav (máx. 50MB)</div>
+                            <input type="file" id="beatFile" accept=".mp3,.wav" style="display: none;">
+                        </div>
+                        <div class="file-info" id="fileInfo">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
                         </div>
                     </div>
 
-                    <button type="submit" class="submit-btn">Enviar Beat</button>
-                </form>
+                    <!-- Progress Bar -->
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Preparando upload...</div>
+                    </div>
 
-                <div class="success-message" id="successMessage">
-                    ✅ Beat enviado com sucesso! O Emite Unico será notificado.
-                </div>
+                    <!-- Status Message -->
+                    <div class="status-message" id="statusMessage"></div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        🚀 Enviar Beat
+                    </button>
+                </form>
             </div>
         </div>
+
+        <!-- Artist Section -->
+        <section class="artist-section">
+            <h2 class="artist-title">🎤 Emite Unico</h2>
+            <p class="artist-description">
+                Artista e produtor musical em busca de novos talentos. 
+                Envie seu beat e faça parte da próxima música de sucesso!
+            </p>
+        </section>
     </main>
 
-    <script>
-        // File upload functionality
-        const fileInput = document.getElementById('beatFile');
-        const fileLabel = document.querySelector('.file-upload-label');
-        
-        fileInput.addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                fileLabel.textContent = `Arquivo selecionado: ${e.target.files[0].name}`;
-                fileLabel.style.borderColor = '#6366f1';
-                fileLabel.style.color = '#6366f1';
-            }
-        });
-
-        // Drag and drop functionality
-        fileLabel.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            fileLabel.classList.add('dragover');
-        });
-
-        fileLabel.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            fileLabel.classList.remove('dragover');
-        });
-
-        fileLabel.addEventListener('drop', function(e) {
-            e.preventDefault();
-            fileLabel.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                fileLabel.textContent = `Arquivo selecionado: ${files[0].name}`;
-                fileLabel.style.borderColor = '#6366f1';
-                fileLabel.style.color = '#6366f1';
-            }
-        });
-
-        // Form submission
-        document.getElementById('beatForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const submitBtn = document.querySelector('.submit-btn');
-            const originalText = submitBtn.textContent;
-            const successMessage = document.getElementById('successMessage');
-            
-            try {
-                submitBtn.textContent = 'Enviando...';
-                submitBtn.disabled = true;
-                
-                // Get form data
-                const producerName = document.getElementById('producerName').value;
-                const beatTitle = document.getElementById('beatTitle').value;
-                const beatMessage = document.getElementById('beatMessage').value;
-                const beatFile = document.getElementById('beatFile').files[0];
-                
-                if (!beatFile) {
-                    throw new Error('Por favor, selecione um arquivo de beat.');
-                }
-                
-                // Validate file type
-                if (!beatFile.type.includes('audio/')) {
-                    throw new Error('Por favor, selecione apenas arquivos de áudio (.mp3 ou .wav).');
-                }
-                
-                // Create beat data
-                const beatData = {
-                    producer_name: producerName,
-                    beat_title: beatTitle,
-                    message: beatMessage || '',
-                    file: beatFile
-                };
-                
-                // Submit to Supabase
-                const result = await submitBeat(beatData);
-                
-                if (result.success) {
-                    // Show success message
-                    successMessage.textContent = '✅ Beat enviado com sucesso! O Emite Unico será notificado.';
-                    successMessage.style.display = 'block';
-                    
-                    // Reset form
-                    this.reset();
-                    fileLabel.textContent = 'Arraste seu arquivo aqui ou clique para selecionar (.mp3 ou .wav)';
-                    fileLabel.style.borderColor = '';
-                    fileLabel.style.color = '';
-                    
-                    // Scroll to success message
-                    successMessage.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center' 
-                    });
-                } else {
-                    throw new Error(result.error || 'Erro ao enviar beat.');
-                }
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                successMessage.textContent = `❌ Erro: ${error.message}`;
-                successMessage.style.display = 'block';
-                successMessage.style.backgroundColor = '#dc2626';
-                
-                // Scroll to error message
-                successMessage.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-            } finally {
-                // Reset button
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-                
-                // Hide message after 5 seconds
-                setTimeout(() => {
-                    successMessage.style.display = 'none';
-                    successMessage.style.backgroundColor = '';
-                }, 5000);
-            }
-        });
-
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(15, 15, 35, 0.98)';
-            } else {
-                header.style.background = 'rgba(15, 15, 35, 0.95)';
-            }
-        });
-
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements for animation
-        document.querySelectorAll('.artist-section, .form-container').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease';
-            observer.observe(el);
-        });
-    </script>
-    
-    <!-- Supabase Scripts - IMPORTANTE: Carregar nesta ordem -->
+    <!-- Supabase Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Aguardar o carregamento completo do Supabase
@@ -687,6 +545,182 @@
             }
         });
     </script>
-    <script src="supabase-config.js"></script>
+    <script src="supabase-config-simple.js"></script>
+    
+    <script>
+        // DOM Elements
+        const form = document.getElementById('beatForm');
+        const fileUpload = document.getElementById('fileUpload');
+        const fileInput = document.getElementById('beatFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // File Upload Handling
+        fileUpload.addEventListener('click', () => fileInput.click());
+        fileUpload.addEventListener('dragover', handleDragOver);
+        fileUpload.addEventListener('dragleave', handleDragLeave);
+        fileUpload.addEventListener('drop', handleDrop);
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            // Validate file
+            const validation = validateBeatFile(file);
+            if (!validation.valid) {
+                showStatus(validation.error, 'error');
+                return;
+            }
+
+            // Show file info
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.add('show');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const producerName = document.getElementById('producerName').value.trim();
+            const beatTitle = document.getElementById('beatTitle').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const file = fileInput.files[0];
+
+            if (!file) {
+                showStatus('Por favor, selecione um arquivo de beat.', 'error');
+                return;
+            }
+
+            // Start upload process
+            await uploadBeat({
+                producer_name: producerName,
+                beat_title: beatTitle,
+                message: message,
+                file: file
+            });
+        });
+
+        async function uploadBeat(beatData) {
+            try {
+                // Show progress
+                submitBtn.disabled = true;
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = 'Enviando...';
+                progressContainer.classList.add('show');
+                progressFill.style.width = '0%';
+                progressText.textContent = 'Iniciando upload...';
+                hideStatus();
+
+                // Simulate progress for mobile feedback
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress > 90) progress = 90;
+                    progressFill.style.width = progress + '%';
+                    progressText.textContent = `Enviando... ${Math.round(progress)}%`;
+                }, 200);
+
+                // Submit beat
+                const result = await submitBeat(beatData);
+                
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Finalizando...';
+
+                if (result.success) {
+                    showStatus('✅ Beat enviado com sucesso! O artista será notificado.', 'success');
+                    form.reset();
+                    fileInfo.classList.remove('show');
+                    progressContainer.classList.remove('show');
+                } else {
+                    throw new Error(result.error);
+                }
+
+            } catch (error) {
+                console.error('Erro ao enviar beat:', error);
+                showStatus(`❌ Erro ao enviar beat: ${error.message}`, 'error');
+            } finally {
+                // Reset UI
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                submitBtn.textContent = '🚀 Enviar Beat';
+                progressContainer.classList.remove('show');
+            }
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message show status-${type}`;
+        }
+
+        function hideStatus() {
+            statusMessage.classList.remove('show');
+        }
+
+        // Mobile-specific optimizations
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        if (isMobile()) {
+            // Add mobile-specific event listeners
+            document.addEventListener('touchstart', function() {}, {passive: true});
+            
+            // Optimize for mobile upload
+            const originalSubmitBeat = window.submitBeat;
+            window.submitBeat = async function(beatData) {
+                // Add mobile-specific timeout handling
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('Timeout: Upload demorou muito. Verifique sua conexão.')), 300000); // 5 minutes
+                });
+                
+                try {
+                    return await Promise.race([originalSubmitBeat(beatData), timeoutPromise]);
+                } catch (error) {
+                    if (error.message.includes('Timeout')) {
+                        throw new Error('Upload demorou muito. Verifique sua conexão e tente novamente.');
+                    }
+                    throw error;
+                }
+            };
+        }
+    </script>
 </body>
-</html>                                         
+</html> 
