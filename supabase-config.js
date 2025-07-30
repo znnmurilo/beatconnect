@@ -1,11 +1,11 @@
 // BeatConnect - Supabase Configuration
 // Substitua pelas suas credenciais do Supabase
 
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'
+const SUPABASE_URL = 'https://wzcvvsvvlllfwtydbict.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind6Y3Z2c3Z2bGxsZnd0eWRiaWN0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM4NDI2OTAsImV4cCI6MjA2OTQxODY5MH0.Y1jY06R6wgORf_hHrgG7K25PumF4jhSq_ors_pu4Qns'
 
 // Inicializar cliente Supabase
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // ===== FUNÇÕES PARA ENVIO DE BEATS =====
 
@@ -21,7 +21,8 @@ const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 async function submitBeat(beatData) {
     try {
         // 1. Upload do arquivo para o storage
-        const fileName = `${Date.now()}_${beatData.file.name}`
+        const sanitizedName = sanitizeFileName(beatData.file.name)
+        const fileName = `${Date.now()}_${sanitizedName}`
         const { data: fileData, error: fileError } = await supabase.storage
             .from('beats')
             .upload(fileName, beatData.file)
@@ -235,6 +236,20 @@ function formatDate(dateString) {
 }
 
 /**
+ * Sanitiza o nome do arquivo para ser compatível com o Supabase Storage
+ * @param {string} fileName - Nome original do arquivo
+ * @returns {string} Nome sanitizado
+ */
+function sanitizeFileName(fileName) {
+    // Remove caracteres especiais e espaços, mantém apenas letras, números, pontos e hífens
+    return fileName
+        .replace(/[^a-zA-Z0-9.-]/g, '_') // Substitui caracteres especiais por underscore
+        .replace(/_+/g, '_') // Remove underscores múltiplos
+        .replace(/^_|_$/g, '') // Remove underscores no início e fim
+        .toLowerCase() // Converte para minúsculas
+}
+
+/**
  * Valida arquivo de beat
  * @param {File} file - Arquivo para validar
  * @returns {Object} Resultado da validação
@@ -254,19 +269,18 @@ function validateBeatFile(file) {
     return { valid: true }
 }
 
-// ===== EXPORTAÇÃO DAS FUNÇÕES =====
+// ===== FUNÇÕES DISPONÍVEIS GLOBALMENTE =====
 
-export {
-    supabase,
-    submitBeat,
-    authenticateAdmin,
-    getAllBeats,
-    updateBeatStatus,
-    deleteBeat,
-    getBeatStats,
-    formatDate,
-    validateBeatFile
-}
+// Todas as funções estão disponíveis globalmente:
+// - submitBeat(beatData)
+// - authenticateAdmin(username, password)
+// - getAllBeats()
+// - updateBeatStatus(beatId, status)
+// - deleteBeat(beatId)
+// - getBeatStats()
+// - formatDate(dateString)
+// - validateBeatFile(file)
+// - sanitizeFileName(fileName)
 
 // ===== CONFIGURAÇÃO DE POLÍTICAS RLS =====
 

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login - BeatConnect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #e2e8f0;
+        }
+        .test-section {
+            background: #1a1a2e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #065f46; color: #d1fae5; }
+        .error { background: #7f1d1d; color: #fecaca; }
+        .info { background: #1e3a8a; color: #dbeafe; }
+        
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #4f46e5; }
+        
+        input {
+            width: 200px;
+            padding: 8px;
+            margin: 5px;
+            background: #374151;
+            color: #e2e8f0;
+            border: 1px solid #4b5563;
+            border-radius: 5px;
+        }
+        
+        .login-form {
+            background: #374151;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de Login - BeatConnect</h1>
+    
+    <div class="test-section">
+        <h2>1. Verificação de Conexão</h2>
+        <button onclick="testConnection()">Testar Conexão Supabase</button>
+        <div id="connectionResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Verificação da Tabela admin_auth</h2>
+        <button onclick="testAdminTable()">Verificar Tabela admin_auth</button>
+        <div id="tableResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Teste de Login</h2>
+        <div class="login-form">
+            <input type="text" id="username" placeholder="Username" value="admin">
+            <input type="password" id="password" placeholder="Senha" value="admin123">
+            <br>
+            <button onclick="testLogin()">🔐 Testar Login</button>
+        </div>
+        <div id="loginResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Teste de Função authenticateAdmin</h2>
+        <button onclick="testAuthenticateFunction()">Testar Função</button>
+        <div id="functionResults"></div>
+    </div>
+    
+    <!-- Supabase Scripts - IMPORTANTE: Carregar nesta ordem -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Aguardar o carregamento completo do Supabase
+        window.addEventListener('load', function() {
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase não foi carregado corretamente!');
+                document.getElementById('connectionResults').innerHTML = '<div class="test-result error">❌ Erro: Supabase não foi carregado. Verifique a conexão com a internet.</div>';
+            } else {
+                console.log('✅ Supabase carregado com sucesso!');
+            }
+        });
+    </script>
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        // Teste 1: Conexão com Supabase
+        async function testConnection() {
+            const resultsDiv = document.getElementById('connectionResults');
+            resultsDiv.innerHTML = '<div class="test-result info">🔄 Testando conexão...</div>';
+            
+            try {
+                if (typeof window.supabase === 'undefined') {
+                    resultsDiv.innerHTML = '<div class="test-result error">❌ Supabase não está disponível</div>';
+                    return;
+                }
+                
+                if (typeof supabase === 'undefined') {
+                    resultsDiv.innerHTML = '<div class="test-result error">❌ Cliente Supabase não foi inicializado</div>';
+                    return;
+                }
+                
+                resultsDiv.innerHTML = '<div class="test-result success">✅ Conexão com Supabase estabelecida</div>';
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">❌ Erro na conexão: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste 2: Verificar tabela admin_auth
+        async function testAdminTable() {
+            const resultsDiv = document.getElementById('tableResults');
+            resultsDiv.innerHTML = '<div class="test-result info">🔄 Verificando tabela admin_auth...</div>';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('admin_auth')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    resultsDiv.innerHTML = `<div class="test-result error">❌ Erro ao acessar tabela: ${error.message}</div>`;
+                    return;
+                }
+                
+                if (data && data.length > 0) {
+                    resultsDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ Tabela admin_auth encontrada<br>
+                            <strong>Usuários encontrados:</strong> ${data.length}<br>
+                            <strong>Primeiro usuário:</strong> ${data[0].username}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = '<div class="test-result warning">⚠️ Tabela existe mas está vazia</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste 3: Login
+        async function testLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const resultsDiv = document.getElementById('loginResults');
+            
+            if (!username || !password) {
+                resultsDiv.innerHTML = '<div class="test-result error">❌ Preencha username e senha</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="test-result info">🔄 Tentando fazer login...</div>';
+            
+            try {
+                const result = await authenticateAdmin(username, password);
+                
+                if (result.success) {
+                    resultsDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ Login realizado com sucesso!<br>
+                            <strong>Usuário:</strong> ${result.data.username}<br>
+                            <strong>ID:</strong> ${result.data.id}
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML = `<div class="test-result error">❌ Falha no login: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">❌ Erro inesperado: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste 4: Função authenticateAdmin
+        async function testAuthenticateFunction() {
+            const resultsDiv = document.getElementById('functionResults');
+            resultsDiv.innerHTML = '<div class="test-result info">🔄 Testando função authenticateAdmin...</div>';
+            
+            try {
+                if (typeof authenticateAdmin === 'function') {
+                    resultsDiv.innerHTML = '<div class="test-result success">✅ Função authenticateAdmin está disponível</div>';
+                } else {
+                    resultsDiv.innerHTML = '<div class="test-result error">❌ Função authenticateAdmin não encontrada</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste automático ao carregar
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                testConnection();
+                testAuthenticateFunction();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

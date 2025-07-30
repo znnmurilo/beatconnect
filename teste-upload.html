@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Upload - BeatConnect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #e2e8f0;
+        }
+        .test-section {
+            background: #1a1a2e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #333;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #065f46; color: #d1fae5; }
+        .error { background: #7f1d1d; color: #fecaca; }
+        .info { background: #1e3a8a; color: #dbeafe; }
+        .warning { background: #92400e; color: #fed7aa; }
+        
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #4f46e5; }
+        
+        input[type="file"] {
+            background: #374151;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #4b5563;
+            margin: 10px 0;
+        }
+        
+        .file-info {
+            background: #374151;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .original-name { color: #fbbf24; }
+        .sanitized-name { color: #34d399; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste de Upload - BeatConnect</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste de Sanitização de Nome</h2>
+        <p>Este teste verifica se a função <code>sanitizeFileName</code> está funcionando corretamente.</p>
+        
+        <button onclick="testSanitization()">Testar Sanitização</button>
+        
+        <div id="sanitizationResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Teste de Upload Simulado</h2>
+        <p>Este teste simula o processo de upload sem realmente enviar o arquivo.</p>
+        
+        <input type="file" id="testFile" accept=".mp3,.wav" onchange="testFileUpload()">
+        
+        <div id="uploadResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Teste de Upload Real</h2>
+        <p>⚠️ <strong>ATENÇÃO:</strong> Este teste realmente enviará o arquivo para o Supabase!</p>
+        
+        <input type="file" id="realFile" accept=".mp3,.wav">
+        <input type="text" id="producerName" placeholder="Nome do Produtor" style="width: 200px; padding: 8px; margin: 5px; background: #374151; color: #e2e8f0; border: 1px solid #4b5563; border-radius: 5px;">
+        <input type="text" id="beatTitle" placeholder="Título do Beat" style="width: 200px; padding: 8px; margin: 5px; background: #374151; color: #e2e8f0; border: 1px solid #4b5563; border-radius: 5px;">
+        <textarea id="message" placeholder="Mensagem (opcional)" style="width: 400px; height: 60px; padding: 8px; margin: 5px; background: #374151; color: #e2e8f0; border: 1px solid #4b5563; border-radius: 5px; resize: vertical;"></textarea>
+        
+        <br>
+        <button onclick="testRealUpload()" style="background: #dc2626;">🚀 Testar Upload Real</button>
+        
+        <div id="realUploadResults"></div>
+    </div>
+    
+    <!-- Supabase Scripts - IMPORTANTE: Carregar nesta ordem -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Aguardar o carregamento completo do Supabase
+        window.addEventListener('load', function() {
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase não foi carregado corretamente!');
+                document.getElementById('sanitizationResults').innerHTML = '<div class="test-result error">❌ Erro: Supabase não foi carregado. Verifique a conexão com a internet.</div>';
+            } else {
+                console.log('✅ Supabase carregado com sucesso!');
+            }
+        });
+    </script>
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        // Teste 1: Sanitização de nomes
+        function testSanitization() {
+            const resultsDiv = document.getElementById('sanitizationResults');
+            const testNames = [
+                '1753843776311_[FREE] LPT Zlatan x Bradockdan Type Beat ＂Pataco 2＂ (prod. Dreey).wav',
+                'Meu Beat com Espaços.mp3',
+                'Beat@#$%^&*()_Especial.wav',
+                'normal-beat.mp3',
+                'BEAT_EM_MAIÚSCULO.WAV'
+            ];
+            
+            let results = '<h3>Resultados da Sanitização:</h3>';
+            
+            testNames.forEach(originalName => {
+                const sanitizedName = sanitizeFileName(originalName);
+                results += `
+                    <div class="file-info">
+                        <div class="original-name"><strong>Original:</strong> ${originalName}</div>
+                        <div class="sanitized-name"><strong>Sanitizado:</strong> ${sanitizedName}</div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = results;
+        }
+        
+        // Teste 2: Upload simulado
+        function testFileUpload() {
+            const fileInput = document.getElementById('testFile');
+            const resultsDiv = document.getElementById('uploadResults');
+            
+            if (!fileInput.files[0]) {
+                resultsDiv.innerHTML = '<div class="test-result error">❌ Nenhum arquivo selecionado</div>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const originalName = file.name;
+            const sanitizedName = sanitizeFileName(originalName);
+            const fileName = `${Date.now()}_${sanitizedName}`;
+            
+            // Validar arquivo
+            const validation = validateBeatFile(file);
+            
+            let results = '<h3>Resultado do Teste:</h3>';
+            results += `
+                <div class="file-info">
+                    <div><strong>Nome Original:</strong> ${originalName}</div>
+                    <div><strong>Nome Sanitizado:</strong> ${sanitizedName}</div>
+                    <div><strong>Nome Final:</strong> ${fileName}</div>
+                    <div><strong>Tamanho:</strong> ${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                    <div><strong>Tipo:</strong> ${file.type}</div>
+                </div>
+            `;
+            
+            if (validation.valid) {
+                results += '<div class="test-result success">✅ Arquivo válido para upload</div>';
+            } else {
+                results += `<div class="test-result error">❌ ${validation.error}</div>`;
+            }
+            
+            resultsDiv.innerHTML = results;
+        }
+        
+        // Teste 3: Upload real
+        async function testRealUpload() {
+            const fileInput = document.getElementById('realFile');
+            const producerInput = document.getElementById('producerName');
+            const titleInput = document.getElementById('beatTitle');
+            const messageInput = document.getElementById('message');
+            const resultsDiv = document.getElementById('realUploadResults');
+            
+            if (!fileInput.files[0]) {
+                resultsDiv.innerHTML = '<div class="test-result error">❌ Nenhum arquivo selecionado</div>';
+                return;
+            }
+            
+            if (!producerInput.value.trim()) {
+                resultsDiv.innerHTML = '<div class="test-result error">❌ Nome do produtor é obrigatório</div>';
+                return;
+            }
+            
+            if (!titleInput.value.trim()) {
+                resultsDiv.innerHTML = '<div class="test-result error">❌ Título do beat é obrigatório</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="test-result info">🔄 Enviando arquivo...</div>';
+            
+            const beatData = {
+                producer_name: producerInput.value.trim(),
+                beat_title: titleInput.value.trim(),
+                message: messageInput.value.trim(),
+                file: fileInput.files[0]
+            };
+            
+            try {
+                const result = await submitBeat(beatData);
+                
+                if (result.success) {
+                    resultsDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ Upload realizado com sucesso!<br>
+                            <strong>ID:</strong> ${result.data[0].id}<br>
+                            <strong>Status:</strong> ${result.data[0].status}
+                        </div>
+                    `;
+                    
+                    // Limpar formulário
+                    fileInput.value = '';
+                    producerInput.value = '';
+                    titleInput.value = '';
+                    messageInput.value = '';
+                } else {
+                    resultsDiv.innerHTML = `<div class="test-result error">❌ Erro no upload: ${result.error}</div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="test-result error">❌ Erro inesperado: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste automático ao carregar
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (typeof sanitizeFileName === 'function') {
+                    console.log('✅ Função sanitizeFileName carregada');
+                } else {
+                    console.error('❌ Função sanitizeFileName não encontrada');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

@@ -493,49 +493,40 @@
         </main>
     </div>
 
+    <!-- Supabase Scripts - IMPORTANTE: Carregar nesta ordem -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Mock data for demonstration
-        let beats = [
-            {
-                id: 1,
-                producer: "Produtor A",
-                title: "Trap Melody",
-                message: "Beat com influência de trap moderno, bpm 140, ideal para flow agressivo.",
-                status: "pending",
-                date: "2024-12-15",
-                fileUrl: "#"
-            },
-            {
-                id: 2,
-                producer: "Produtor B",
-                title: "Drill Beat",
-                message: "Beat drill com 808 pesado, bpm 135, perfeito para rimas rápidas.",
-                status: "viewed",
-                date: "2024-12-14",
-                fileUrl: "#"
-            },
-            {
-                id: 3,
-                producer: "Produtor C",
-                title: "Melodic Trap",
-                message: "Beat melódico com sintetizadores atmosféricos, bpm 130.",
-                status: "downloaded",
-                date: "2024-12-13",
-                fileUrl: "#"
+        // Aguardar o carregamento completo do Supabase
+        window.addEventListener('load', function() {
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase não foi carregado corretamente!');
+            } else {
+                console.log('✅ Supabase carregado com sucesso!');
             }
-        ];
+        });
+    </script>
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        // Global beats array
+        let beats = [];
 
         // Login functionality
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Simple authentication (in real app, this would be server-side)
-            if (username === 'admin' && password === 'admin123') {
-                login();
-            } else {
-                alert('Usuário ou senha incorretos!');
+            try {
+                const result = await authenticateAdmin(username, password);
+                if (result.success) {
+                    login();
+                } else {
+                    alert('Usuário ou senha incorretos!');
+                }
+            } catch (error) {
+                console.error('Erro no login:', error);
+                alert('Erro ao fazer login. Tente novamente.');
             }
         });
 
@@ -552,14 +543,37 @@
             document.getElementById('loginForm').reset();
         }
 
-        function loadBeats() {
-            const beatsList = document.getElementById('beatsList');
-            beatsList.innerHTML = '';
+        async function loadBeats() {
+            try {
+                const result = await getAllBeats();
+                if (result.success) {
+                    beats = result.data.map(beat => ({
+                        id: beat.id,
+                        producer: beat.producer_name,
+                        title: beat.beat_title,
+                        message: beat.message,
+                        status: beat.status,
+                        date: beat.created_at,
+                        fileUrl: beat.file_url
+                    }));
+                    
+                    const beatsList = document.getElementById('beatsList');
+                    beatsList.innerHTML = '';
 
-            beats.forEach(beat => {
-                const beatElement = createBeatElement(beat);
-                beatsList.appendChild(beatElement);
-            });
+                    beats.forEach(beat => {
+                        const beatElement = createBeatElement(beat);
+                        beatsList.appendChild(beatElement);
+                    });
+                    
+                    updateStats();
+                } else {
+                    console.error('Erro ao carregar beats:', result.error);
+                    alert('Erro ao carregar beats. Tente novamente.');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar beats:', error);
+                alert('Erro ao carregar beats. Tente novamente.');
+            }
         }
 
         function createBeatElement(beat) {
@@ -580,33 +594,51 @@
                     <button class="btn btn-primary" onclick="updateStatus(${beat.id}, 'viewed')">👁️ Visualizado</button>
                     <button class="btn btn-success" onclick="updateStatus(${beat.id}, 'downloaded')">⬇️ Baixado</button>
                     <button class="btn btn-warning" onclick="updateStatus(${beat.id}, 'rejected')">❌ Rejeitar</button>
-                    <button class="btn btn-danger" onclick="deleteBeat(${beat.id})">🗑️ Excluir</button>
+                    <button class="btn btn-danger" onclick="deleteBeatFromDashboard(${beat.id})">🗑️ Excluir</button>
                 </div>
             `;
             return div;
         }
 
-        function updateStatus(beatId, newStatus) {
-            const beat = beats.find(b => b.id === beatId);
-            if (beat) {
-                beat.status = newStatus;
-                loadBeats();
-                updateStats();
-                alert(`Status atualizado para: ${getStatusText(newStatus)}`);
+        async function updateStatus(beatId, newStatus) {
+            try {
+                const result = await updateBeatStatus(beatId, newStatus);
+                if (result.success) {
+                    await loadBeats();
+                    alert(`Status atualizado para: ${getStatusText(newStatus)}`);
+                } else {
+                    alert('Erro ao atualizar status. Tente novamente.');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+                alert('Erro ao atualizar status. Tente novamente.');
             }
         }
 
-        function deleteBeat(beatId) {
+        async function deleteBeatFromDashboard(beatId) {
             if (confirm('Tem certeza que deseja excluir este beat?')) {
-                beats = beats.filter(b => b.id !== beatId);
-                loadBeats();
-                updateStats();
-                alert('Beat excluído com sucesso!');
+                try {
+                    const result = await deleteBeat(beatId);
+                    if (result.success) {
+                        await loadBeats();
+                        alert('Beat excluído com sucesso!');
+                    } else {
+                        alert('Erro ao excluir beat. Tente novamente.');
+                    }
+                } catch (error) {
+                    console.error('Erro ao excluir beat:', error);
+                    alert('Erro ao excluir beat. Tente novamente.');
+                }
             }
         }
 
         function playBeat(beatId) {
-            alert('Funcionalidade de reprodução será implementada com Supabase!');
+            const beat = beats.find(b => b.id === beatId);
+            if (beat && beat.fileUrl) {
+                window.open(beat.fileUrl, '_blank');
+            } else {
+                alert('Arquivo não encontrado!');
+            }
         }
 
         function filterBeats() {
@@ -624,11 +656,19 @@
             });
         }
 
-        function updateStats() {
-            document.getElementById('totalBeats').textContent = beats.length;
-            document.getElementById('pendingBeats').textContent = beats.filter(b => b.status === 'pending').length;
-            document.getElementById('viewedBeats').textContent = beats.filter(b => b.status === 'viewed').length;
-            document.getElementById('downloadedBeats').textContent = beats.filter(b => b.status === 'downloaded').length;
+        async function updateStats() {
+            try {
+                const result = await getBeatStats();
+                if (result.success) {
+                    const stats = result.data;
+                    document.getElementById('totalBeats').textContent = stats.total;
+                    document.getElementById('pendingBeats').textContent = stats.pending;
+                    document.getElementById('viewedBeats').textContent = stats.viewed;
+                    document.getElementById('downloadedBeats').textContent = stats.downloaded;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
         }
 
         function getStatusText(status) {

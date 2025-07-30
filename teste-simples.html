@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Simples - Supabase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #e2e8f0;
+        }
+        .test-result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #065f46; color: #d1fae5; }
+        .error { background: #7f1d1d; color: #fecaca; }
+        .info { background: #1e3a8a; color: #dbeafe; }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #4f46e5; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Simples - Supabase</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testSupabase()">Testar Supabase</button>
+    <button onclick="testConfig()">Testar Config</button>
+    
+    <!-- Scripts na ordem correta -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Teste 1: Verificar se o Supabase foi carregado
+        function testSupabase() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (typeof window.supabase !== 'undefined') {
+                resultsDiv.innerHTML += '<div class="test-result success">✅ Supabase carregado com sucesso!</div>';
+                console.log('Supabase disponível:', window.supabase);
+            } else {
+                resultsDiv.innerHTML += '<div class="test-result error">❌ Supabase não foi carregado!</div>';
+                console.error('Supabase não disponível');
+            }
+        }
+        
+        // Teste 2: Verificar se createClient está disponível
+        function testCreateClient() {
+            const resultsDiv = document.getElementById('results');
+            
+            if (typeof window.supabase.createClient === 'function') {
+                resultsDiv.innerHTML += '<div class="test-result success">✅ createClient disponível!</div>';
+            } else {
+                resultsDiv.innerHTML += '<div class="test-result error">❌ createClient não disponível!</div>';
+            }
+        }
+        
+        // Teste 3: Verificar configuração
+        function testConfig() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                // Tentar carregar o arquivo de configuração
+                const script = document.createElement('script');
+                script.src = 'supabase-config.js';
+                script.onload = function() {
+                    if (typeof supabase !== 'undefined') {
+                        resultsDiv.innerHTML += '<div class="test-result success">✅ Configuração carregada com sucesso!</div>';
+                    } else {
+                        resultsDiv.innerHTML += '<div class="test-result error">❌ Configuração não funcionou!</div>';
+                    }
+                };
+                script.onerror = function() {
+                    resultsDiv.innerHTML += '<div class="test-result error">❌ Erro ao carregar supabase-config.js!</div>';
+                };
+                document.head.appendChild(script);
+            } catch (error) {
+                resultsDiv.innerHTML += `<div class="test-result error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste automático ao carregar
+        window.addEventListener('load', function() {
+            document.getElementById('results').innerHTML = '<div class="test-result info">🔄 Carregando testes...</div>';
+            setTimeout(() => {
+                testSupabase();
+                testCreateClient();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

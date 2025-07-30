@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Conexão - Supabase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f0f23;
+            color: #e2e8f0;
+        }
+        .test-section {
+            background: #1a1a2e;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .info { color: #3b82f6; }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        pre {
+            background: #16213e;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Teste de Conexão - Supabase</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste de Conexão Básica</h2>
+        <button onclick="testConnection()">Testar Conexão</button>
+        <div id="connectionResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Teste de Upload de Arquivo</h2>
+        <input type="file" id="testFile" accept=".mp3,.wav" />
+        <button onclick="testUpload()">Testar Upload</button>
+        <div id="uploadResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Teste de Inserção no Banco</h2>
+        <button onclick="testInsert()">Testar Inserção</button>
+        <div id="insertResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Teste de Leitura do Banco</h2>
+        <button onclick="testRead()">Testar Leitura</button>
+        <div id="readResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Logs de Erro</h2>
+        <div id="errorLogs"></div>
+    </div>
+
+    <!-- Supabase Scripts - IMPORTANTE: Carregar nesta ordem -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Aguardar o carregamento completo do Supabase
+        window.addEventListener('load', function() {
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase não foi carregado corretamente!');
+                document.getElementById('errorLogs').innerHTML = '<div class="error">❌ Erro: Supabase não foi carregado. Verifique a conexão com a internet.</div>';
+            } else {
+                console.log('✅ Supabase carregado com sucesso!');
+            }
+        });
+    </script>
+    <script src="supabase-config.js"></script>
+    
+    <script>
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('errorLogs');
+            const timestamp = new Date().toLocaleTimeString();
+            logsDiv.innerHTML += `<div class="${type}">[${timestamp}] ${message}</div>`;
+        }
+
+        async function testConnection() {
+            const resultDiv = document.getElementById('connectionResult');
+            resultDiv.innerHTML = '<div class="info">Testando conexão...</div>';
+            
+            try {
+                // Teste básico de conexão
+                const { data, error } = await supabase.from('beats').select('count').limit(1);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success">✅ Conexão com Supabase estabelecida com sucesso!</div>';
+                log('Conexão com Supabase OK', 'success');
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro na conexão: ${error.message}</div>`;
+                log(`Erro na conexão: ${error.message}`, 'error');
+                console.error('Erro na conexão:', error);
+            }
+        }
+
+        async function testUpload() {
+            const resultDiv = document.getElementById('uploadResult');
+            const fileInput = document.getElementById('testFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                resultDiv.innerHTML = '<div class="error">❌ Selecione um arquivo primeiro!</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">Testando upload...</div>';
+            
+            try {
+                const fileName = `test_${Date.now()}_${file.name}`;
+                const { data, error } = await supabase.storage
+                    .from('beats')
+                    .upload(fileName, file);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success">✅ Upload realizado com sucesso!</div>';
+                log(`Upload OK: ${fileName}`, 'success');
+                
+                // Limpar arquivo de teste
+                setTimeout(async () => {
+                    try {
+                        await supabase.storage.from('beats').remove([fileName]);
+                        log(`Arquivo de teste removido: ${fileName}`, 'info');
+                    } catch (cleanupError) {
+                        log(`Erro ao limpar arquivo de teste: ${cleanupError.message}`, 'error');
+                    }
+                }, 5000);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro no upload: ${error.message}</div>`;
+                log(`Erro no upload: ${error.message}`, 'error');
+                console.error('Erro no upload:', error);
+            }
+        }
+
+        async function testInsert() {
+            const resultDiv = document.getElementById('insertResult');
+            resultDiv.innerHTML = '<div class="info">Testando inserção...</div>';
+            
+            try {
+                const testData = {
+                    producer_name: 'Teste Automático',
+                    beat_title: 'Beat de Teste',
+                    message: 'Este é um beat de teste para verificar a conexão.',
+                    file_url: 'https://example.com/test.mp3',
+                    status: 'pending'
+                };
+                
+                const { data, error } = await supabase
+                    .from('beats')
+                    .insert([testData])
+                    .select();
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = '<div class="success">✅ Inserção realizada com sucesso!</div>';
+                log(`Inserção OK: ID ${data[0].id}`, 'success');
+                
+                // Limpar registro de teste
+                setTimeout(async () => {
+                    try {
+                        await supabase.from('beats').delete().eq('id', data[0].id);
+                        log(`Registro de teste removido: ID ${data[0].id}`, 'info');
+                    } catch (cleanupError) {
+                        log(`Erro ao limpar registro de teste: ${cleanupError.message}`, 'error');
+                    }
+                }, 5000);
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro na inserção: ${error.message}</div>`;
+                log(`Erro na inserção: ${error.message}`, 'error');
+                console.error('Erro na inserção:', error);
+            }
+        }
+
+        async function testRead() {
+            const resultDiv = document.getElementById('readResult');
+            resultDiv.innerHTML = '<div class="info">Testando leitura...</div>';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('beats')
+                    .select('*')
+                    .limit(5);
+                
+                if (error) {
+                    throw error;
+                }
+                
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Leitura realizada com sucesso!</div>
+                    <div class="info">Encontrados ${data.length} registros</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                log(`Leitura OK: ${data.length} registros encontrados`, 'success');
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro na leitura: ${error.message}</div>`;
+                log(`Erro na leitura: ${error.message}`, 'error');
+                console.error('Erro na leitura:', error);
+            }
+        }
+
+        // Teste automático ao carregar a página
+        window.addEventListener('load', () => {
+            log('Página carregada. Iniciando testes...', 'info');
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+</html> 

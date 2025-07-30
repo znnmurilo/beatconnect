@@ -560,41 +560,85 @@
         });
 
         // Form submission
-        document.getElementById('beatForm').addEventListener('submit', function(e) {
+        document.getElementById('beatForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Simulate form submission
             const submitBtn = document.querySelector('.submit-btn');
             const originalText = submitBtn.textContent;
+            const successMessage = document.getElementById('successMessage');
             
-            submitBtn.textContent = 'Enviando...';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                // Show success message
-                document.getElementById('successMessage').style.display = 'block';
+            try {
+                submitBtn.textContent = 'Enviando...';
+                submitBtn.disabled = true;
                 
-                // Reset form
-                this.reset();
-                fileLabel.textContent = 'Arraste seu arquivo aqui ou clique para selecionar (.mp3 ou .wav)';
-                fileLabel.style.borderColor = '';
-                fileLabel.style.color = '';
+                // Get form data
+                const producerName = document.getElementById('producerName').value;
+                const beatTitle = document.getElementById('beatTitle').value;
+                const beatMessage = document.getElementById('beatMessage').value;
+                const beatFile = document.getElementById('beatFile').files[0];
                 
+                if (!beatFile) {
+                    throw new Error('Por favor, selecione um arquivo de beat.');
+                }
+                
+                // Validate file type
+                if (!beatFile.type.includes('audio/')) {
+                    throw new Error('Por favor, selecione apenas arquivos de áudio (.mp3 ou .wav).');
+                }
+                
+                // Create beat data
+                const beatData = {
+                    producer_name: producerName,
+                    beat_title: beatTitle,
+                    message: beatMessage || '',
+                    file: beatFile
+                };
+                
+                // Submit to Supabase
+                const result = await submitBeat(beatData);
+                
+                if (result.success) {
+                    // Show success message
+                    successMessage.textContent = '✅ Beat enviado com sucesso! O Emite Unico será notificado.';
+                    successMessage.style.display = 'block';
+                    
+                    // Reset form
+                    this.reset();
+                    fileLabel.textContent = 'Arraste seu arquivo aqui ou clique para selecionar (.mp3 ou .wav)';
+                    fileLabel.style.borderColor = '';
+                    fileLabel.style.color = '';
+                    
+                    // Scroll to success message
+                    successMessage.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                } else {
+                    throw new Error(result.error || 'Erro ao enviar beat.');
+                }
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                successMessage.textContent = `❌ Erro: ${error.message}`;
+                successMessage.style.display = 'block';
+                successMessage.style.backgroundColor = '#dc2626';
+                
+                // Scroll to error message
+                successMessage.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            } finally {
                 // Reset button
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
                 
-                // Hide success message after 5 seconds
+                // Hide message after 5 seconds
                 setTimeout(() => {
-                    document.getElementById('successMessage').style.display = 'none';
+                    successMessage.style.display = 'none';
+                    successMessage.style.backgroundColor = '';
                 }, 5000);
-                
-                // Scroll to success message
-                document.getElementById('successMessage').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'center' 
-                });
-            }, 2000);
+            }
         });
 
         // Header scroll effect
@@ -630,5 +674,19 @@
             observer.observe(el);
         });
     </script>
+    
+    <!-- Supabase Scripts - IMPORTANTE: Carregar nesta ordem -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Aguardar o carregamento completo do Supabase
+        window.addEventListener('load', function() {
+            if (typeof window.supabase === 'undefined') {
+                console.error('❌ Supabase não foi carregado corretamente!');
+            } else {
+                console.log('✅ Supabase carregado com sucesso!');
+            }
+        });
+    </script>
+    <script src="supabase-config.js"></script>
 </body>
-</html> 
+</html>                                         
