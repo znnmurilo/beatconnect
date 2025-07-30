@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeatConnect - Dashboard</title>
+    <title>BeatEmite - Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --bg: #0f0f23;
-            --bg-light: #1a1a2e;
-            --bg-card: #16213e;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --accent: #f1f5f9;
-            --border: #334155;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            --glow: 0 0 20px rgba(99, 102, 241, 0.3);
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-        }
+                 :root {
+             --primary: #6b7280;
+             --primary-dark: #4b5563;
+             --bg: #000000;
+             --bg-light: #111111;
+             --bg-card: #1a1a1a;
+             --text: #e5e7eb;
+             --text-muted: #9ca3af;
+             --accent: #f3f4f6;
+             --border: #374151;
+             --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+             --glow: 0 0 20px rgba(107, 114, 128, 0.3);
+             --success: #6b7280;
+             --warning: #9ca3af;
+             --danger: #ef4444;
+         }
 
         * {
             margin: 0;
@@ -232,13 +232,19 @@
             overflow: hidden;
         }
 
-        .beats-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+                 .beats-header {
+             padding: 1.5rem;
+             border-bottom: 1px solid var(--border);
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .beats-controls {
+             display: flex;
+             gap: 1rem;
+             align-items: center;
+         }
 
         .beats-title {
             font-size: 1.25rem;
@@ -353,10 +359,16 @@
             color: white;
         }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
+                 .btn-primary:hover {
+             background: var(--primary-dark);
+             transform: translateY(-2px);
+         }
+
+         .btn-primary:disabled {
+             opacity: 0.6;
+             cursor: not-allowed;
+             transform: none;
+         }
 
         .btn-success {
             background: var(--success);
@@ -427,7 +439,7 @@
     <div class="login-screen" id="loginScreen">
         <div class="login-card">
             <div class="login-header">
-                <div class="login-logo">🎵 BeatConnect</div>
+                <div class="login-logo">🎵 BeatEmite</div>
                 <div class="login-subtitle">Dashboard Administrativo</div>
             </div>
             <form id="loginForm">
@@ -448,7 +460,7 @@
     <div class="dashboard" id="dashboard">
         <header class="dashboard-header">
             <nav class="dashboard-nav">
-                <div class="dashboard-logo">🎵 BeatConnect Dashboard</div>
+                <div class="dashboard-logo">🎵 BeatEmite Dashboard</div>
                 <button class="logout-btn" onclick="logout()">Sair</button>
             </nav>
         </header>
@@ -476,16 +488,21 @@
             </div>
 
             <div class="beats-container">
-                <div class="beats-header">
-                    <h2 class="beats-title">Beats Recebidos</h2>
-                    <select class="filter-select" id="statusFilter" onchange="filterBeats()">
-                        <option value="all">Todos os status</option>
-                        <option value="pending">Pendentes</option>
-                        <option value="viewed">Visualizados</option>
-                        <option value="downloaded">Baixados</option>
-                        <option value="rejected">Rejeitados</option>
-                    </select>
-                </div>
+                                 <div class="beats-header">
+                     <h2 class="beats-title">Beats Recebidos</h2>
+                     <div class="beats-controls">
+                         <button class="btn btn-primary" onclick="refreshBeats()" id="refreshBtn">
+                             🔄 Atualizar
+                         </button>
+                         <select class="filter-select" id="statusFilter" onchange="filterBeats()">
+                             <option value="all">Todos os status</option>
+                             <option value="pending">Pendentes</option>
+                             <option value="viewed">Visualizados</option>
+                             <option value="downloaded">Baixados</option>
+                             <option value="rejected">Rejeitados</option>
+                         </select>
+                     </div>
+                 </div>
                 <div class="beats-list" id="beatsList">
                     <!-- Beats will be loaded here -->
                 </div>
@@ -686,10 +703,28 @@
             return date.toLocaleDateString('pt-BR');
         }
 
-        // Check if already logged in
-        if (localStorage.getItem('dashboardLoggedIn') === 'true') {
-            login();
-        }
+                 // Função para atualizar beats
+         async function refreshBeats() {
+             const refreshBtn = document.getElementById('refreshBtn');
+             refreshBtn.disabled = true;
+             refreshBtn.innerHTML = '🔄 Atualizando...';
+             
+             try {
+                 await loadBeats();
+                 alert('Beats atualizados com sucesso!');
+             } catch (error) {
+                 console.error('Erro ao atualizar beats:', error);
+                 alert('Erro ao atualizar beats. Tente novamente.');
+             } finally {
+                 refreshBtn.disabled = false;
+                 refreshBtn.innerHTML = '🔄 Atualizar';
+             }
+         }
+
+         // Check if already logged in
+         if (localStorage.getItem('dashboardLoggedIn') === 'true') {
+             login();
+         }
     </script>
 </body>
 </html> 
