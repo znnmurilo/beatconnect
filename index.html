@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Beats Emitê - Home</title>
+    <title>PortalSenndy - Home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -148,6 +148,119 @@
             box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
         }
 
+        /* Banner Rotativo */
+        .banner-carousel {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto 2rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .banner-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .banner-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Fallback gradients caso as imagens não carreguem */
+        }
+
+        .banner-slide:nth-child(1) {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+
+        .banner-slide:nth-child(2) {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
+
+        .banner-slide:nth-child(3) {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .banner-slide:nth-child(4) {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .banner-slide:nth-child(5) {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .banner-slide.active {
+            opacity: 1;
+        }
+
+        .banner-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .banner-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .banner-subtitle {
+            font-size: 1.2rem;
+            font-weight: 400;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Indicadores do Banner */
+        .banner-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: var(--primary);
+            transform: scale(1.2);
+        }
+
         /* Hero Section */
         .hero {
             min-height: 100vh;
@@ -160,18 +273,8 @@
         }
 
         .hero-content {
-            max-width: 800px;
+            max-width: 900px;
             z-index: 1;
-        }
-
-        .hero-title {
-            font-size: clamp(3rem, 8vw, 5rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1.5rem;
-            animation: fadeInUp 1s ease;
         }
 
         .hero-subtitle {
@@ -337,6 +440,19 @@
             .features-grid {
                 grid-template-columns: 1fr;
             }
+
+            .banner-carousel {
+                height: 250px;
+                margin: 0 1rem 2rem;
+            }
+
+            .banner-title {
+                font-size: 1.8rem;
+            }
+
+            .banner-subtitle {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -347,7 +463,7 @@
         <nav class="navbar">
             <a href="#" class="logo">
                 <div class="logo-icon">🎵</div>
-                BeatEmite
+                PortalSenndy
             </a>
             <ul class="nav-links">
                 <li><a href="#features">Recursos</a></li>
@@ -360,9 +476,40 @@
     <main>
         <section class="hero">
             <div class="hero-content">
-                <h1 class="hero-title floating">Beats Emitê</h1>
+                <!-- Banner Rotativo -->
+                <div class="banner-carousel floating">
+                    <div class="banner-container">
+                        <div class="banner-slide active" style="background-image: url('https://media.discordapp.net/attachments/1397726071599792170/1400545088689541252/DSC_5838.jpg?ex=688d06c2&is=688bb542&hm=ad00f8f8f03c6542ac1453d3d220b19bd046b6a4ed616d3d0a713e8885ad2773&=&format=webp&width=570&height=856');">
+                            <div class="banner-content">
+                                <div class="banner-title">🎵 PortalSenndy </div>
+                                <div class="banner-subtitle">Sua beats e samp em destaque</div>
+                            </div>
+                        </div>
+                        <div class="banner-slide" style="background-image: url('https://media.discordapp.net/attachments/1397726071599792170/1400545089767346369/IMG_7768.jpg?ex=688d06c2&is=688bb542&hm=b2fbc1c0a98f9c77e7b92858ae264f4fd57eb26b3714a0487230bbfcaeff4165&=&format=webp&width=570&height=856');">
+                            <div class="banner-content">
+                                <div class="banner-title">🚀 Envie seus Beats</div>
+                                <div class="banner-subtitle">Diretamente para o portal</div>
+                            </div>
+                        </div>
+                        <div class="banner-slide" style="background-image: url('https://media.discordapp.net/attachments/1397726071599792170/1400545091000729620/IMG_7769.jpg?ex=688d06c2&is=688bb542&hm=576f720173bcf916fc8d0a47825fef2f01e8ae83bd5aa1f51b5bd133d9891497&=&format=webp&width=570&height=856');">
+                            <div class="banner-content">
+                                <div class="banner-title">⭐ Qualidade Profissional</div>
+                                <div class="banner-subtitle">Suporte completo</div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="banner-indicators">
+                        <span class="indicator active" data-slide="0"></span>
+                        <span class="indicator" data-slide="1"></span>
+                        <span class="indicator" data-slide="2"></span>
+                        <span class="indicator" data-slide="3"></span>
+                        <span class="indicator" data-slide="4"></span>
+                    </div>
+                </div>
+
                 <p class="hero-subtitle">
-                    A plataforma definitiva para conectar produtores ao Emite Unico. 
+                    A plataforma definitiva para conectar produtores ao PortalSenndy. 
                     Envie seus beats diretamente.
                 </p>
                 <div class="hero-buttons">
@@ -373,13 +520,13 @@
         </section>
 
         <section class="features" id="features">
-            <h2 class="section-title">Por que escolher o BeatEmite?</h2>
+            <h2 class="section-title">Por que escolher o PortalSenndy?</h2>
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">🚀</div>
                     <h3 class="feature-title">Envio Direto</h3>
                     <p class="feature-desc">
-                        Envie seus beats diretamente para o Emite Unico sem intermediários. 
+                        Envie seus beats diretamente para o PortalSenndy sem intermediários. 
                         Processo simples e rápido.
                     </p>
                 </div>
@@ -405,6 +552,88 @@
     </main>
 
     <script>
+        // Banner Rotativo
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.banner-slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+
+        // Pré-carregar todas as imagens
+        const imageUrls = [
+            'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'
+        ];
+
+        // Função para pré-carregar imagens
+        function preloadImages() {
+            imageUrls.forEach((url, index) => {
+                const img = new Image();
+                img.onload = function() {
+                    console.log(`Imagem ${index + 1} carregada`);
+                };
+                img.onerror = function() {
+                    console.log(`Erro ao carregar imagem ${index + 1}`);
+                    // Fallback para gradiente se a imagem não carregar
+                    const fallbackGradients = [
+                        'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                        'linear-gradient(135deg, #06b6d4, #0891b2)',
+                        'linear-gradient(135deg, #10b981, #059669)',
+                        'linear-gradient(135deg, #f59e0b, #d97706)',
+                        'linear-gradient(135deg, #ef4444, #dc2626)'
+                    ];
+                    slides[index].style.background = fallbackGradients[index];
+                    slides[index].style.backgroundImage = 'none';
+                };
+                img.src = url;
+            });
+        }
+
+        function showSlide(index) {
+            // Remove active class from all slides and indicators
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                // Força a atualização do background se necessário
+                if (i === index) {
+                    const bgImage = slide.style.backgroundImage;
+                    if (!bgImage || bgImage === 'none') {
+                        slide.style.backgroundImage = `url('${imageUrls[i]}')`;
+                    }
+                }
+            });
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+            
+            // Add active class to current slide and indicator
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        // Pré-carregar imagens ao iniciar
+        preloadImages();
+
+        // Auto rotation every 4 seconds
+        const autoRotate = setInterval(nextSlide, 4000);
+
+        // Manual navigation with indicators
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+                // Reinicia o timer automático
+                clearInterval(autoRotate);
+                setTimeout(() => {
+                    setInterval(nextSlide, 4000);
+                }, 4000);
+            });
+        });
+
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
